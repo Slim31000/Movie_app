@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './MovieList.css'
 import Fire from '../../assets/fire.png'
 import Star from '../../assets/glowing-star.png'
@@ -8,6 +8,18 @@ import { MovieCard } from './MovieCard'
 
 
 function MovieList() {
+    const[dataMovie, setDataMovie] = useState([])
+    console.log(dataMovie)
+
+  useEffect(()=>{
+    const fetchMovies= async()=>{
+        const res = await fetch('https://api.themoviedb.org/3/movie/popular?api_key=1da5d506960a4fc36fc361413c78688f')
+        const data= await res.json()
+        console.log(data)
+        setDataMovie(data.results)
+    }
+    fetchMovies()
+  },[])
   return (
     <section className="movie_list">
         {/* header */}
@@ -33,7 +45,10 @@ function MovieList() {
         </header>
         {/* Movie Card */}
         <div className="movie_cards">
-            <MovieCard />
+            {dataMovie.map((movie)=>{
+                return <MovieCard key={movie.id} movie={movie}></MovieCard>
+            })}
+            
         </div>
     </section>
   )
