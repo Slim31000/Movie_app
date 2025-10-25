@@ -4,12 +4,28 @@ import Fire from '../../assets/fire.png'
 import Star from '../../assets/glowing-star.png'
 import Party from '../../assets/partying-face.png'
 import { MovieCard } from './MovieCard'
+import FilterGroup from './FilterGroup'
 
 
 
 function MovieList() {
     const[dataMovie, setDataMovie] = useState([])
-    console.log(dataMovie)
+    const[filterMovie, setFilterMovie]= useState([])
+    const[minRatin, setMinRating] = useState(0)
+
+    const handleFilter= (rate)=>{
+
+        if(rate===minRatin){
+            setMinRating(0)
+            setFilterMovie(dataMovie)
+        }else{
+            setMinRating(rate)
+        
+        const filtered = dataMovie.filter(movie => movie.vote_average >= rate )
+        setFilterMovie(filtered)
+        }
+        
+    }
 
   useEffect(()=>{
     const fetchMovies= async()=>{
@@ -17,6 +33,7 @@ function MovieList() {
         const data= await res.json()
         console.log(data)
         setDataMovie(data.results)
+        setFilterMovie(data.results)
     }
     fetchMovies()
   },[])
@@ -26,11 +43,7 @@ function MovieList() {
         <header className='align_center movie_list_header'>
             <h2 className='align_center movie_list_heading'>Popular <img src={Fire} alt="fire emoji" className='navbar_emoji' /></h2>
             <div className='align_center movie_list_fs'>
-                <ul className="align_center movie_filter">
-                    <li className="movie_filter_item active">8+ Star</li>
-                    <li className="movie_filter_item">7+ Star</li>
-                    <li className="movie_filter_item">6+ Star</li>
-                </ul>
+                <FilterGroup minRatin={minRatin} handleFilter={handleFilter} ratings ={[8,7,6]}/>
                 <select name="" id="" className="movie_sorting">
                     <option value="">SortBy</option>
                     <option value="">Date</option>
@@ -45,7 +58,7 @@ function MovieList() {
         </header>
         {/* Movie Card */}
         <div className="movie_cards">
-            {dataMovie.map((movie)=>{
+            {filterMovie.map((movie)=>{
                 return <MovieCard key={movie.id} movie={movie}></MovieCard>
             })}
             
